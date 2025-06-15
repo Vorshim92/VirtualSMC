@@ -182,35 +182,25 @@ int SMIMonitor::i8k_set_fan(int fan, int speed) {
 }
 
 int SMIMonitor::i8k_set_fan_control_manual() {
-	// we have to write to both control registers since some Dell models
-	// support only one register and smm does not return error for unsupported one
-	SMBIOS_PKG smm_pkg {};
-	smm_pkg.cmd = I8K_SMM_IO_DISABLE_FAN_CTL1;
-	smm_pkg.data = 0;
-	int result1 = i8k_smm(&smm_pkg, true);
+    SMBIOS_PKG smm_pkg {};
+    
+    smm_pkg.cmd = I8K_SMM_IO_DISABLE_FAN_CTL2; // 0x34a3
+    smm_pkg.data = 0;
+    int result2 = i8k_smm(&smm_pkg, true);
 
-	smm_pkg = {};
-	smm_pkg.cmd = I8K_SMM_IO_DISABLE_FAN_CTL2;
-	smm_pkg.data = 0;
-	int result2 = i8k_smm(&smm_pkg, true);
-
-	return (result1 >= 0) ? result1 : result2;
+    return result2;
 }
 
 int SMIMonitor::i8k_set_fan_control_auto() {
 	// we have to write to both control registers since some Dell models
 	// support only one register and smm does not return error for unsupported one
 	SMBIOS_PKG smm_pkg {};
-	smm_pkg.cmd = I8K_SMM_IO_ENABLE_FAN_CTL1;
-	smm_pkg.data = 0;
-	int result1 = i8k_smm(&smm_pkg, true);
-
-	smm_pkg = {};
-	smm_pkg.cmd = I8K_SMM_IO_ENABLE_FAN_CTL2;
+	
+	smm_pkg.cmd = I8K_SMM_IO_ENABLE_FAN_CTL2; // 0x35a3
 	smm_pkg.data = 0;
 	int result2 =  i8k_smm(&smm_pkg, true);
 
-	return (result1 >= 0) ? result1 : result2;
+	return result2;
 }
 
 void SMIMonitor::createShared() {
